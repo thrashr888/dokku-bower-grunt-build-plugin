@@ -3,12 +3,17 @@
 APP="$1"; IMAGE="dokku/$APP"
 echo "-----> Building Node app ..."
 COMMAND=$(cat <<EOF
-cd "\$DOKKU_ROOT/\$APP" &&
-server/prepare_dist &&
+cd "/app" &&
+new_path="\$(find / -name npm | tail -1 | xargs -I % sh -c "dirname %")" &&
+PATH="\$PATH:\$new_path" &&
+PATH="\$PATH:\$(npm bin)" &&
+npm install grunt &&
+npm install grunt-cli &&
+npm install bower &&
 npm update &&
-bower install &&
-bower update &&
-grunt build
+bower --allow-root install &&
+bower --allow-root update &&
+grunt build --force
 EOF
 )
 
